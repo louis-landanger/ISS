@@ -131,6 +131,7 @@ export async function createSpace(container, {onProgress, onSelect, onContextLos
 
   let mode='explore',selected=5,playing=!reducedMotion,speed=1,transition=null,disposed=false;
   const labels=document.getElementById('orbit-labels');
+  const overviewCaption=document.getElementById('overview-caption');
   const labelButtons=planets.map(planet=>{
     const button=document.createElement('button');button.className='orbit-label';button.textContent=planet.name;button.ariaLabel=`Explore ${planet.name}`;
     button.onclick=()=>onSelect(planet.id);labels.append(button);return button;
@@ -206,12 +207,28 @@ export async function createSpace(container, {onProgress, onSelect, onContextLos
       });
       controls.update();
       renderer.render(scene,camera);
-      if(mode==='overview') overviewPlanets.forEach((object,index)=>{
-        projected.copy(object.position);projected.y+=planets[index].radius*.7;projected.project(camera);
-        const visible=projected.z>-1&&projected.z<1;
-        labelButtons[index].style.visibility=visible?'visible':'hidden';
-        labelButtons[index].style.transform=`translate(${(projected.x*.5+.5)*width}px,${(-projected.y*.5+.5)*height-17}px) translate(-50%,-100%)`;
-      });
+      if(mode==='overview') {
+        // Read layout before writing transforms. Protect the entire heading block,
+        // including wrapped text, as the camera, viewport, and planets move.
+        const captionBounds=overviewCaption.getBoundingClientRect();
+        const layerBounds=labels.getBoundingClientRect();
+        const labelSizes=labelButtons.map(button=>({width:button.offsetWidth,height:button.offsetHeight}));
+        const clearance=12;
+        overviewPlanets.forEach((object,index)=>{
+          projected.copy(object.position);projected.y+=planets[index].radius*.7;projected.project(camera);
+          const x=(projected.x*.5+.5)*width;
+          const y=(-projected.y*.5+.5)*height-17;
+          const left=layerBounds.left+x-labelSizes[index].width/2;
+          const top=layerBounds.top+y-labelSizes[index].height;
+          const overlapsCaption=left<captionBounds.right+clearance
+            &&left+labelSizes[index].width>captionBounds.left-clearance
+            &&top<captionBounds.bottom+clearance
+            &&top+labelSizes[index].height>captionBounds.top-clearance;
+          const visible=projected.z>-1&&projected.z<1&&!overlapsCaption;
+          labelButtons[index].style.visibility=visible?'visible':'hidden';
+          labelButtons[index].style.transform=`translate(${x}px,${y}px) translate(-50%,-100%)`;
+        });
+      }
     }
     frame=requestAnimationFrame(render);
   }
