@@ -1,0 +1,11 @@
+{
+  "name": "orbit-solar-system",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "An interactive solar system with realistic planets and a liquid glass interface.",
+  "scripts": {
+    "dev": "python3 -m http.server 5173 --directory dist",
+    "check": "node --check dist/app.js && node --check dist/scene.js && node --check dist/data.js"
+  }
+}

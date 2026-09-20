@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080a0e">
+  <meta name="description" content="A little closer to the extraordinary. Explore our solar system in 3D, from the rocky inner planets to the distant ice giants.">
+  <title>Orbit — A little closer</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230b1017'/%3E%3Ccircle cx='32' cy='32' r='13' fill='%23e7d2ae'/%3E%3Cellipse cx='32' cy='32' rx='28' ry='9' transform='rotate(-35 32 32)' fill='none' stroke='%23ffffff' stroke-width='3'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="./styles.css">
+  <script type="importmap">{"imports":{"three":"./vendor/three.module.js","three/addons/":"./vendor/"}}</script>
+</head>
+<body>
+  <a class="skip-link" href="#planet-dock">Skip to planet selection</a>
+  <main id="app" data-view="explore">
+    <div id="space" aria-label="Interactive 3D view of Saturn"></div>
+    <div class="ambient-light" aria-hidden="true"></div>
+    <div class="vignette" aria-hidden="true"></div>
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="Orbit home"><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="13"/><ellipse cx="24" cy="24" rx="24" ry="9" transform="rotate(-42 24 24)"/><circle class="satellite" cx="39" cy="10" r="2.5"/></svg><span>Orbit<span class="brand-dot">.</span></span></a>
+      <nav class="view-switch glass" aria-label="Viewing mode"><button id="explore-view" class="selected" aria-pressed="true">Explore</button><button id="overview-view" aria-pressed="false">Solar system</button></nav>
+      <div class="header-actions"><button class="icon-button glass" id="reset-view" title="Reset camera (R)" aria-label="Reset camera"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10a9 9 0 1 1 2 8M3 4v6h6"/></svg></button><button class="icon-button glass" id="about-open" title="About Orbit" aria-label="About Orbit"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7v.1"/></svg></button></div>
+    </header>
+    <div class="scene-heading"><span class="eyebrow" id="scene-eyebrow">OUR SOLAR SYSTEM</span><p id="scene-caption">A little closer to the extraordinary.</p></div>
+    <aside class="planet-card glass" id="planet-card" aria-label="Planet information">
+      <div class="card-topline"><span class="eyebrow" id="planet-type">GAS GIANT</span><span class="planet-index" id="planet-index">06 / 08</span></div>
+      <h1 id="planet-name">Saturn</h1>
+      <p class="planet-subtitle" id="planet-tagline">The ringed wonder.</p>
+      <p class="planet-description" id="planet-description">A world lighter than water, wrapped in a dazzling halo of ice and ancient rock.</p>
+      <dl class="stats">
+        <div><dt><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="m6 15 12-6M5 12l1 3 3 1m6-8 3 1 1 3"/></svg>Diameter</dt><dd id="stat-diameter">116,460 <small>km</small></dd></div>
+        <div><dt><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg>Rotation</dt><dd id="stat-day">10.7 <small>hours</small></dd></div>
+        <div><dt><svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="12" rx="10" ry="5" transform="rotate(-30 12 12)"/><circle cx="12" cy="12" r="3"/></svg>One year</dt><dd id="stat-year">29.4 <small>Earth years</small></dd></div>
+      </dl>
+      <div class="distance"><span>DISTANCE FROM THE SUN</span><strong id="stat-distance">1.43 <small>billion km</small></strong><div class="distance-track" aria-hidden="true"><i></i><b id="distance-marker"></b></div><div class="distance-labels"><span>SUN</span><span>NEPTUNE</span></div></div>
+      <a id="nasa-link" class="text-link" href="https://science.nasa.gov/saturn/" target="_blank" rel="noopener noreferrer">Discover more at NASA <span aria-hidden="true">↗</span></a>
+    </aside>
+    <section class="overview-caption" hidden id="overview-caption"><span class="eyebrow">ONE STAR. EIGHT WORLDS.</span><h1>Our cosmic neighborhood.</h1><p>Select a planet to get a little closer.</p></section>
+    <div id="orbit-labels" aria-label="Planets in the solar system" hidden></div>
+    <div class="scene-tools"><div class="interaction-hint"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="3" width="10" height="18" rx="5"/><path d="M12 6v4"/></svg><span class="desktop-hint">Drag to orbit<span class="hint-dot">·</span>Scroll to zoom</span><span class="touch-hint">Drag to orbit · Pinch to zoom</span></div><div class="playback glass"><button id="play-pause" class="play-button" aria-label="Pause animation" title="Pause animation (Space)"><svg id="pause-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6v12M16 6v12"/></svg><svg id="play-icon" viewBox="0 0 24 24" hidden aria-hidden="true"><path d="m8 5 11 7-11 7Z"/></svg></button><div class="control-divider"></div><label for="speed">Time speed</label><select id="speed" aria-label="Animation speed"><option value="0.25">0.25×</option><option value="1" selected>1×</option><option value="5">5×</option><option value="20">20×</option></select></div></div>
+    <nav class="planet-dock glass" id="planet-dock" aria-label="Choose a planet"></nav>
+    <footer class="footer"><span class="scale-note"><svg viewBox="0 0 28 12" aria-hidden="true"><path d="M1 2v8M27 2v8M1 6h26"/></svg>Illustrative scale</span><span class="footer-center">A SOLAR SYSTEM EXPLORER</span><button id="hide-ui" class="quiet-button" title="Hide interface (H)">Hide interface <kbd>H</kbd></button></footer>
+    <button class="restore-ui glass" id="show-ui" hidden>Show interface <kbd>H</kbd></button>
+    <div class="loading glass" id="loading" role="status"><span class="loading-orbit"></span><span>Getting a little closer<span id="load-percent">…</span></span></div>
+    <p id="announcement" class="sr-only" aria-live="polite"></p>
+  </main>
+  <dialog id="about-dialog" class="glass"><button class="dialog-close icon-button" aria-label="Close about" id="about-close">×</button><span class="eyebrow">WELCOME TO ORBIT</span><h2>Room for wonder.</h2><p>Eight worlds, one extraordinary neighborhood. Take your time. There’s a lot to look at.</p><h3>Make yourself at home</h3><p>Drag to orbit. Scroll or pinch to zoom. Select a planet below, or explore the whole solar system.</p><div class="shortcuts"><span><kbd>Space</kbd> Pause</span><span><kbd>←</kbd><kbd>→</kbd> Planets</span><span><kbd>R</kbd> Reset view</span><span><kbd>H</kbd> Hide interface</span></div><h3>A beautiful approximation</h3><p>Sizes and distances are compressed for exploration. Orbits are circular and illustrative, not current positions. Rotation and orbital speeds are accelerated separately for visibility. “Rotation” means a sidereal day.</p><p class="credits">Planet facts: <a href="https://science.nasa.gov/solar-system/planets/" target="_blank" rel="noopener noreferrer">NASA</a>. Textures: <a href="https://www.solarsystemscope.com/textures/" target="_blank" rel="noopener noreferrer">Solar System Scope</a>, <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a>. Rendered with Three.js.</p></dialog>
+  <noscript><div class="fallback glass">Orbit needs JavaScript to display the planets. Please enable JavaScript and reload.</div></noscript>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
